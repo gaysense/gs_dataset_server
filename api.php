@@ -3,4 +3,7 @@ require_once('toolkit.php');
 require_once('database.php');
 Runtime::start();
 Utils::checkData();
-RetVal::positive(["message"=>"received"]);
+Data::initialize('./data/');
+if(Data::saveToFile()){RetVal::positive(["message"=>"M_RECEIVED"]);}else{
+    RetVal::negative(["error"=>"E_CORRUPTED"]);
+}

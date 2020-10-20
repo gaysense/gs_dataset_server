@@ -4,7 +4,7 @@ function dec($str){
 }
 
 function enc($arr){
-    return json_encode($arr);
+    return json_encode($arr,JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 }
 class Runtime
 {
@@ -45,6 +45,7 @@ class RetVal
             'time' => time(),
             'memory_peak_usage' => memory_get_peak_usage(),
             'req_processing_delay' => Runtime::end(),
+            'stack_trace'=>debug_backtrace(),
 //            'opcached'=>opcache_is_script_cached('api.php'),
             "GAYSENSE_TM_API_version"=> "弌"
         ]);
@@ -53,12 +54,13 @@ class RetVal
 }
 class Utils{
     public static function checkData(){
-        if(empty($_POST['data'])){
-            RetVal::negative(['error' => '无效的数据！']);
+        if(empty($_REQUEST['data'])){
+            RetVal::negative(['error' => 'E_INVALID_DATA']);
         }
-        $_POST['data'] = json_decode(base64_decode($_POST['data']), true);
-        if(empty($_POST['data'])){
-            RetVal::negative(['error' => '无效的数据！']);
+        $data=$_REQUEST['data'];
+        $_REQUEST['data'] = dec(base64_decode($_REQUEST['data']));
+        if(empty($_REQUEST['data'])){
+            RetVal::negative(['error' => 'E_INVALID_JSON'.base64_decode($data)]);
         }
     }
 }
